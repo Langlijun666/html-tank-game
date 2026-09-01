@@ -49,6 +49,7 @@ canvas.height = ROWS * TILE;
 const EMPTY = 0, BRICK = 1, STEEL = 2, WATER = 3, GRASS = 4, BASE = 5;
 const DIR = { UP: 0, DOWN: 1, LEFT: 2, RIGHT: 3 };
 const DIR_V = [[0,-1],[0,1],[-1,0],[1,0]];
+const DIR_ANGLE = [0, Math.PI, -Math.PI/2, Math.PI/2];
 
 let gameState = 'menu'; // menu, playing, paused, gameover, levelclear
 let score = 0, lives = 3, level = 1;
@@ -169,13 +170,27 @@ function generateMap(lvl) {
     let gy = 2 + Math.floor(rng() * (ROWS-5));
     m[gy][gx] = GRASS;
   }
-  // Clear spawn areas
-  m[1][1] = EMPTY; m[1][2] = EMPTY; m[2][1] = EMPTY;
-  m[1][Math.floor(COLS/2)] = EMPTY; m[1][Math.floor(COLS/2)-1] = EMPTY;
-  m[1][COLS-2] = EMPTY; m[1][COLS-3] = EMPTY; m[2][COLS-2] = EMPTY;
-  // Clear player spawn
-  m[ROWS-2][Math.floor(COLS/2)-2] = EMPTY;
-  m[ROWS-2][Math.floor(COLS/2)] = EMPTY;
+  // Clear enemy spawn areas (3x2 each)
+  let eSpots = [[1,1],[Math.floor(COLS/2)-1,1],[COLS-3,1]];
+  for (let sp of eSpots) {
+    for (let dy = 0; dy <= 1; dy++) {
+      for (let dx = -1; dx <= 1; dx++) {
+        let sy = sp[1] + dy, sx = sp[0] + dx;
+        if (sy >= 0 && sy < ROWS && sx >= 0 && sx < COLS) map[sy][sx] = EMPTY;
+      }
+    }
+  }
+  // Clear player spawn area (3 tiles wide)
+  let pSpawnX = Math.floor(COLS/2) - 1;
+  for (let dy = -1; dy <= 0; dy++) {
+    for (let dx = -1; dx <= 1; dx++) {
+      let sy = ROWS - 2 + dy;
+      let sx = pSpawnX + dx;
+      if (sy >= 0 && sy < ROWS && sx >= 0 && sx < COLS) {
+        if (map[sy][sx] !== BASE) map[sy][sx] = EMPTY;
+      }
+    }
+  }
   return m;
 }
 
@@ -470,7 +485,7 @@ function drawTank(tank) {
   let cy = tank.y + tank.h/2;
   ctx.save();
   ctx.translate(cx, cy);
-  ctx.rotate(tank.dir * Math.PI/2);
+  ctx.rotate(DIR_ANGLE[tank.dir]);
 
   let color = tank.isPlayer ? '#4c4' : (tank.hp > 1 ? '#c84' : '#c44');
   // Body
