@@ -526,6 +526,7 @@ function drawExplosions() {
 function draw() {
   ctx.fillStyle = '#111';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
+  if (!map || map.length === 0) return;
   // Draw map
   for (let y = 0; y < ROWS; y++) {
     for (let x = 0; x < COLS; x++) {
@@ -543,6 +544,18 @@ function draw() {
     }
   }
   drawExplosions();
+  // Pause overlay
+  if (gameState === 'paused') {
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 48px Microsoft YaHei, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('暂停', canvas.width/2, canvas.height/2);
+    ctx.font = '20px Microsoft YaHei, sans-serif';
+    ctx.fillText('按 P 继续', canvas.width/2, canvas.height/2 + 40);
+    ctx.textAlign = 'left';
+  }
   // Update UI
   document.getElementById('enemies').textContent = enemiesLeft + enemies.filter(e=>e.alive).length;
   document.getElementById('lives').textContent = lives;
@@ -590,6 +603,10 @@ function startGame() {
   document.getElementById('score').textContent = score;
   document.getElementById('level').textContent = level;
   document.getElementById('overlay').classList.add('hidden');
+  document.querySelector('#overlay h1').textContent = '坦克大战';
+  document.querySelector('#overlay p').textContent = 'WASD / 方向键 移动';
+  document.querySelector('#overlay p + p').textContent = '空格键 射击';
+  document.getElementById('startBtn').textContent = '开始游戏';
   initLevel();
   gameState = 'playing';
 }
