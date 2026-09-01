@@ -175,8 +175,8 @@ function generateMap(lvl) {
   for (let sp of eSpots) {
     for (let dy = 0; dy <= 1; dy++) {
       for (let dx = -1; dx <= 1; dx++) {
-        let sy = sp[1] + dy, sx = sp[0] + dx;
-        if (sy >= 0 && sy < ROWS && sx >= 0 && sx < COLS) map[sy][sx] = EMPTY;
+        let ey = sp[1] + dy, ex = sp[0] + dx;
+        if (ey >= 0 && ey < ROWS && ex >= 0 && ex < COLS) m[ey][ex] = EMPTY;
       }
     }
   }
@@ -187,7 +187,7 @@ function generateMap(lvl) {
       let sy = ROWS - 2 + dy;
       let sx = pSpawnX + dx;
       if (sy >= 0 && sy < ROWS && sx >= 0 && sx < COLS) {
-        if (map[sy][sx] !== BASE) map[sy][sx] = EMPTY;
+        if (m[sy][sx] !== BASE) m[sy][sx] = EMPTY;
       }
     }
   }
